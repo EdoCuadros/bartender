@@ -1,4 +1,31 @@
 {
-    "1": {"rum": 2, "drink_2": 4},
-    "2": {"drink_3": 2, "drink_4": 1}
+    "Daiquiri": {
+        "rum": [0, 0], 
+        "lime": [0, 0], 
+        "sweeetener": [0, 0]
+    },
+    "Rum Punch": {
+        "rum": [0, 0],
+        "orange": [0, 0],
+        "lime": [0, 0],
+        "sweeetener": [0, 0]    
+    },
+    "Mai Tai": {
+        "rum": [0, 0],
+        "orange": [0, 0],
+        "lime": [0, 0],
+        "sweeetener": [0, 0]
+    },
+    "Cuban Sunset": {
+        "rum": [0, 0],
+        "orange": [0, 0],
+        "lime": [0, 0],
+        "sweeetener": [0, 0]
+    },
+    "Tropical Sour": {
+                "rum": [0, 0],
+        "orange": [0, 0],
+        "lime": [0, 0],
+        "sweeetener": [0, 0]
+    }
 }

@@ -1,6 +1,11 @@
 from dataclasses import dataclass
 from enum import Enum
 from typing import Optional, Literal
+import requests
+from dataclasses import asdict
+
+API = 'https://3okai9k1ec.execute-api.us-east-1.amazonaws.com/prod/Coctelera'
+headers = {'Authorization': 'API_COCTELERA_HASH_KEY' }
 
 class EstadoEnum(str, Enum):
     IDLE = 'IDLE'
@@ -83,4 +88,35 @@ class IOT:
     temp3: float
     temp4: float
     tempOut: float
+
+def leerEstado()->ESTADO:
+    response = requests.get(API, headers=headers)
+    if response.status_code == 200:
+        data = response.json()
+        return ESTADO(data['results'])
+    else:
+        print(f"Error {response.status_code}: {response.text}")
+
+def reset()->ESTADO:
+    response = requests.delete(API, headers=headers)
+    if response.status_code == 200:
+        data = response.json()
+        return ESTADO(data['results'])
+    else:
+        print(f"Error {response.status_code}: {response.text}")
+
+def registrarIOT(info:IOT):
+    response = requests.post(API, headers=headers, json=asdict(info))
+    if response.status_code == 200:
+        print("TODO BIEN")
+    else:
+        print(f"Error {response.status_code}: {response.text}")
+
+def resultadoPedido(info:ESTADO)->ESTADO:
+    response = requests.put(API, headers=headers, json=asdict(info))
+    if response.status_code == 200:
+        data = response.json()
+        return ESTADO(data['results'])
+    else:
+        print(f"Error {response.status_code}: {response.text}")
 
