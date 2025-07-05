@@ -4,12 +4,11 @@ import os
 from simple_pid import PID
 
 IN1 = 22
-EN = 3
 
-_GPIO = (IN1, EN)
+
 # La entrada de ambas funciones debe ser un vector con los pines de IN1, IN2, EN -> [IN1, IN2, EN]
 
-def init_pump(_GPIO):
+def init_pump(IN1):
     """
     Inicializa los pines para uso del puente H.
     Input:
@@ -20,11 +19,10 @@ def init_pump(_GPIO):
     except:
         print("Falta importar las librerías")
     # Configuración de pines como salidas
-    GPIO.setup(_GPIO[0], GPIO.OUT)
-    GPIO.setup(_GPIO[1], GPIO.OUT)
+    GPIO.setup(IN1, GPIO.OUT)
 
 
-def run_pump(_GPIO, setpoint, sensor):
+def run_pump(IN1: int, setpoint: int, sensor):
     """
     Enciende la bomba para servir los ingredientes.
     Inputs:
@@ -37,8 +35,9 @@ def run_pump(_GPIO, setpoint, sensor):
     pid = PID(1,1,1, setpoint=setpoint)
     pid.output_limits = (0, 100)
 
-    pwm = GPIO.PWM(_GPIO[1], 1000)
+    pwm = GPIO.PWM(IN1, 1000)
     pwm.start(0)
+
     try:
         while True:
             level = sensor.range    # [mm]
@@ -52,3 +51,4 @@ def run_pump(_GPIO, setpoint, sensor):
     finally:
         pwm.stop()
         GPIO.cleanup()
+        

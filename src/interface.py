@@ -15,11 +15,22 @@ class EstadoEnum(str, Enum):
     FIN = 'FIN'
 
 class CoctelEnum(str, Enum):
-    CLASSIC_DAIQUIRI = 'Classic Daiquiri'
+    CLASSIC_DAIQUIRI = 'Daiquiri'
     RUM_PUNCH = 'Rum Punch'
     MAI_TAI = 'Mai Tai'
     CUBAN_SUNSET = 'Cuban Sunset'
     TROPICAL_SOUR = 'Tropical Sour'
+
+class DataCoctel:
+    def __init__(self, info: dict[str, int]):
+        self.rum = info["rum"]
+        self.orange = info["orange"]
+        self.lime = info["lime"]
+        self.sweetener = info["sweetener"]
+    rum: int
+    orange: int
+    lime: int
+    sweetener: int
 
 @dataclass
 class ESTADO:

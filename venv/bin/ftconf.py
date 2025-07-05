@@ -1,4 +1,4 @@
-#!/home/bm/bartender/venv/bin/python3
+#!/home/ed/cloned_repos/bartender/venv/bin/python3
 
 """Simple FTDI EEPROM configurator.
 """

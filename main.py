@@ -13,45 +13,21 @@ from interface import(
     registrarIOT,
     resultadoPedido
 )
-from recipe_config import DRINKS
-from sensarNivel import getLevel, select_channel, init_sensors
+from recipe_config import DRINKS, INGREDIENT_STATUS
+from sensores import getLevel, select_channel, init_sensors
 from sensarTemp import getTemp
 from valv import init_pump, run_pump
-
-
-"""
-def handle_drink_request(drink_number):
-    pass
-    #dispenser.dispense(drink_number, DRINKS)
-"""
-
+from dispenser import dispense
 
 if __name__ == "__main__":
 
+    
     while True:
-
+        init_sensors()
         _estado = leerEstado()
-        if _estado.estado == 'pedido':
-            coctel = _estado.coctel
-        
-        match coctel:
-            case "Daiquiri":
-                # TODO:funcion para coctel 1
-                pass
-            case "Rum Punch":
-                # TODO:funcion para coctel 2
-                pass
-            case "Mai Tai":
-                # TODO: funcion para coctel 3
-                pass
-            case "Cuban Sunset":
-                # TODO: funcion para coctel 4
-                pass
-            case "Tropical Sour":
-                # TODO: funcion para coctel 5
-                pass
-            case _:
-                time.sleep(5)
+        if _estado.estado == 'pedido' and _estado.coctel:
+            coctel = DRINKS[_estado.coctel]
+            dispense(coctel)
         
 
 

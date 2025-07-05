@@ -1,31 +1,31 @@
 {
     "Daiquiri": {
-        "rum": [0, 0], 
-        "lime": [0, 0], 
-        "sweeetener": [0, 0]
+        "rum": 60, 
+        "lime": 30, 
+        "sweetener": 15
     },
     "Rum Punch": {
-        "rum": [0, 0],
-        "orange": [0, 0],
-        "lime": [0, 0],
-        "sweeetener": [0, 0]    
+        "rum": 45,
+        "orange": 60,
+        "lime": 15,
+        "sweetener": 15    
     },
     "Mai Tai": {
-        "rum": [0, 0],
-        "orange": [0, 0],
-        "lime": [0, 0],
-        "sweeetener": [0, 0]
+        "rum": 50,
+        "orange": 30,
+        "lime": 20,
+        "sweetener": 15
     },
     "Cuban Sunset": {
-        "rum": [0, 0],
-        "orange": [0, 0],
-        "lime": [0, 0],
-        "sweeetener": [0, 0]
+        "rum": 50,
+        "orange": 50,
+        "lime": 15,
+        "sweetener": 10
     },
     "Tropical Sour": {
-                "rum": [0, 0],
-        "orange": [0, 0],
-        "lime": [0, 0],
-        "sweeetener": [0, 0]
+        "rum": 45,
+        "orange": 30,
+        "lime": 10,
+        "sweetener": 15
     }
 }
