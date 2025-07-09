@@ -1,44 +1,55 @@
+from enum import Enum
 import time
 import board
 import busio
 import adafruit_vl53l0x
-from smbus2 import SMBus
+from smbus2 import SMBus        # para controlar el multiplexor
+
+class SensorEnum(int, Enum):
+    SENSOR_1 = 0
+    SENSOR_2 = 1
+    SENSOR_3 = 2
+
+
+class sensorVL53L0X:
+    def __init__(self, channel: SensorEnum, i2c_bus: busio.I2C, mux_dir: int):
+        self.channel = channel
+        self.i2c_bus = i2c_bus          # Para el sensor
+        self.mux_dir = mux_dir          # Dirección I2C del multiplexor (por defecto 0x70)
+        self.bus_control = SMBus(1)     # Controla el multiplexor
+        self._select_channel()
+        time.sleep(0.1)
+        self.sensor = adafruit_vl53l0x.VL53L0X(i2c_bus)
+        time.sleep(0.1)
+
+    def _select_channel(self):
+        """
+        Activa el canal correspondiente al multiplexor I2C
+        """
+        if 0 <= self.channel.value <= 7:
+            try:
+                self.bus_control.write_byte(self.mux_dir, 1 << self.channel.value)
+                time.sleep(0.05)
+            except OSError as e:
+                print(f"[ERROR] Canal {self.channel.name} no pudo activarse: {e}")
+
+    def get_range(self) -> int:
+        """
+        Lee y retorna la distancia medida por el sensor
+        """
+        self._select_channel()
+        return self.sensor.range
     
-MUX_ADDRESS = 0x70
+class Sensores:
+    def __init__(self, i2c_bus: busio.I2C, mux_dir: int = 0x70):
+        self.i2c_bus = i2c_bus
+        self.mux_dir = mux_dir
+        self.sensores: dict[SensorEnum, sensorVL53L0X] = {}
+        self._init_sensores()
 
-control_bus = SMBus(1)
+    def _init_sensores(self):
+        for channel in SensorEnum:
+            self.sensores[channel] = sensorVL53L0X(channel, self.i2c_bus, self.mux_dir)
 
-i2c = busio.I2C(board.SCL, board.SDA)
-sensors = [None] * 4
-
-
-def select_channel(channel):
-    """
-    Método para seleccionar canales del multiplexor. 
-    Se activa el canal que se quiere leer y el resto se cierra.
-    Input: 
-    - channel: Canal del sensor que se quiere leer
-    """
-    if 0 <= channel <= 4:       # 4 sensores de nivel conectados por i2c
-        control_bus.write_byte(MUX_ADDRESS, 1 << channel)
-        time.sleep(0.5)
-
-def init_sensors():
-    """
-    Se inicializan los sensores creando un objeto para cada uno   
-    y guardandolo en el vector 'sensors'
-    """
-    global sensors
-
-        #select_channel(channel)
-    sensors = adafruit_vl53l0x.VL53L0X(i2c)
-    time.sleep(0.1)
-
-
-def getLevel(channel):
-    """
-    Se hace lectura del canal deseado
-    """
-    #select_channel(channel)
-    return sensors.range
-
+    def get_level(self, channel: SensorEnum) -> int:
+        return self.sensores[channel].get_range()            

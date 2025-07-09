@@ -2,6 +2,8 @@ from dataclasses import asdict
 import sys
 import os
 import requests
+import busio
+import board
 sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
 import RPi.GPIO
 import time
@@ -14,22 +16,24 @@ from interface import(
     resultadoPedido
 )
 from recipe_config import DRINKS, INGREDIENT_STATUS
-from sensores import getLevel, select_channel, init_sensors
+from sensores import SensorEnum, Sensores
 from sensarTemp import getTemp
-from valv import init_pump, run_pump
+from valv import init_pumps
 from dispenser import dispense
 
 if __name__ == "__main__":
+    print("Iniciando sensores")
+    i2c = busio.I2C(board.SCL, board.SDA)
+    sensores = Sensores(i2c)
 
-    
     while True:
-        init_sensors()
-        _estado = leerEstado()
-        if _estado.estado == 'pedido' and _estado.coctel:
-            coctel = DRINKS[_estado.coctel]
-            dispense(coctel)
+        for channel in SensorEnum:
+            level = sensores.get_level(channel)
+            print(f"Sensor {channel.name} (channel {channel.value}): {level} mm")
         
-
+        print("-------")
+        time.sleep(1)
+        
 
     # TODO: Mandar cada cierto tiempo el estado de los sensores
     # TODO: Implementar interrupción de emergencia

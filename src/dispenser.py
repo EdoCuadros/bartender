@@ -1,29 +1,22 @@
 import RPi.GPIO as GPIO
 import time
-from interface import ESTADO, DataCoctel
-from valv import init_pump, run_pump
-from sensores import sensors
-
-# PINES IN1
-PUMPS:dict[str, int] = {
-    "rum": 26,
-    "sweetener": 17,
-    "orange": 27,
-    "lime": 22
-    #"out": 0
-}
-
-MOTOR_PIN = 23
+from interface import ESTADO, PUMPS, DataCoctel
+from valv import run_pump
+import threading
 
 # TODO: Escribir la función para dispensar bebidas
 
+def dispense(coctel: DataCoctel, s):
+    threads = []
 
+    threads.append(threading.Thread(target=run_pump, args=(PUMPS["rum"], coctel.rum, s)))
+    threads.append(threading.Thread(target=run_pump, args=(PUMPS["orange"], coctel.orange, s)))
+    threads.append(threading.Thread(target=run_pump, args=(PUMPS["lime"], coctel.lime, s)))
+    threads.append(threading.Thread(target=run_pump, args=(PUMPS["sweetener"], coctel.sweetener, s)))
 
-def dispense(coctel: DataCoctel):
-
-
-    # Sirve los ingredientes
-    run_pump(PUMPS["rum"],coctel.rum, sensors)
-    sensors.range
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
 
     # TODO: Actualiza estados de los ingredientes

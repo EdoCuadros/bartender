@@ -7,6 +7,14 @@ from dataclasses import asdict
 API = 'https://3okai9k1ec.execute-api.us-east-1.amazonaws.com/prod/Coctelera'
 headers = {'Authorization': 'API_COCTELERA_HASH_KEY' }
 
+PUMPS:dict[str, int] = {
+    "rum": 26,
+    "sweetener": 17,
+    "orange": 27,
+    "lime": 22
+    #"out": 0
+}
+
 class EstadoEnum(str, Enum):
     IDLE = 'IDLE'
     LLAVE = 'LLAVE'
