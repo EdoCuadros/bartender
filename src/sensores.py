@@ -4,12 +4,13 @@ import board
 import busio
 import adafruit_vl53l0x
 from smbus2 import SMBus        # para controlar el multiplexor
+import numpy as np
 
 class SensorEnum(int, Enum):
-    SENSOR_1 = 0
-    SENSOR_2 = 1
-    SENSOR_3 = 2
-
+    rum_sensor  = 0
+    lime_sensor = 1
+    orange_sensor = 2
+    sweetener_sensor = 3
 
 class sensorVL53L0X:
     def __init__(self, channel: SensorEnum, i2c_bus: busio.I2C, mux_dir: int):
@@ -17,6 +18,9 @@ class sensorVL53L0X:
         self.i2c_bus = i2c_bus          # Para el sensor
         self.mux_dir = mux_dir          # Dirección I2C del multiplexor (por defecto 0x70)
         self.bus_control = SMBus(1)     # Controla el multiplexor
+        self.altura_vaso = 0.1 #   [m]
+        self.radio_menor = 0.053    # [m]
+        self.radio_mayor = 0.09
         self._select_channel()
         time.sleep(0.1)
         self.sensor = adafruit_vl53l0x.VL53L0X(i2c_bus)
@@ -40,16 +44,36 @@ class sensorVL53L0X:
         self._select_channel()
         return self.sensor.range
     
+    @property
+    def get_volume(self) -> float:
+        """
+        Usa la función get_range para leer la altura y lo convierte en volumen.
+        """
+        h_prime = self.get_range() 
+        R_prime = self.radio_mayor * (self.altura_vaso - h_prime) / self.altura_vaso
+
+        # Conversión de altura sensada a volumen de liquido restante
+        return 1 / 3 * np.pi * (self.altura_vaso - h_prime) * (
+            R_prime ** 2 + self.radio_menor ** 2 + R_prime * self.radio_menor)  
+    
 class Sensores:
     def __init__(self, i2c_bus: busio.I2C, mux_dir: int = 0x70):
         self.i2c_bus = i2c_bus
         self.mux_dir = mux_dir
-        self.sensores: dict[SensorEnum, sensorVL53L0X] = {}
         self._init_sensores()
 
     def _init_sensores(self):
-        for channel in SensorEnum:
-            self.sensores[channel] = sensorVL53L0X(channel, self.i2c_bus, self.mux_dir)
+        self.rum = sensorVL53L0X(SensorEnum.rum_sensor, self.i2c_bus, self.mux_dir)
+        self.lime = sensorVL53L0X(SensorEnum.lime_sensor, self.i2c_bus, self.mux_dir)
+        self.orange = sensorVL53L0X(SensorEnum.orange_sensor, self.i2c_bus, self.mux_dir)
+        self.sweetener = sensorVL53L0X(SensorEnum.sweetener_sensor, self.i2c_bus, self.mux_dir)
 
-    def get_level(self, channel: SensorEnum) -> int:
-        return self.sensores[channel].get_range()            
+    """
+    def get_volume(self, sensor : sensorVL53L0X) -> float:
+        h_prime = sensor.get_range 
+        R_prime = self.radio_mayor * (self.altura_vaso - h_prime) / self.altura_vaso
+
+        # Conversión de altura sensada a volumen de liquido restante
+        return 1 / 3 * np.pi * (self.altura_vaso - h_prime) * (
+            R_prime ** 2 + self.radio_menor ** 2 + R_prime * self.radio_menor)  
+    """

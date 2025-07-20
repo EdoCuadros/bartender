@@ -4,6 +4,7 @@ import os
 from simple_pid import PID
 
 from interface import PUMPS
+from sensores import sensorVL53L0X
 
 
 
@@ -28,7 +29,7 @@ def init_pumps():
       
 
 
-def run_pump(IN1: int, setpoint: int, sensor):
+def run_pump(IN1: int, setpoint: int, sensor : sensorVL53L0X):
     """
     Enciende la bomba para servir los ingredientes.
     Inputs:
@@ -46,13 +47,13 @@ def run_pump(IN1: int, setpoint: int, sensor):
 
     try:
         while True:
-            level = sensor.range    # [mm]
-            print(level)
-            output = pid(level)
+            volume = sensor.get_volume    # [mm]
+            print(volume)
+            output = pid(volume)
             print(output)
             pwm.ChangeDutyCycle(output)
 
-            if abs(level - setpoint) < 2:
+            if abs(volume - setpoint) < 2:
                 break
 
             time.sleep(0.1)
